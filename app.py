@@ -6,6 +6,9 @@ from bs4 import BeautifulSoup
 from telegram.ext import Updater, CommandHandler
 
 
+updater = Updater(get_config()["telegram_token"], use_context=True)
+
+
 def get_config():
     with open("config/config.json", "r") as read_file:
         config = json.load(read_file)
@@ -79,8 +82,6 @@ def get_feed(update, context):
 
 
 def main():
-    updater = Updater(get_config()["telegram_token"], use_context=True)
-
     updater.dispatcher.add_handler(CommandHandler("start", start))
     updater.dispatcher.add_handler(CommandHandler("feed", get_feed))
 
