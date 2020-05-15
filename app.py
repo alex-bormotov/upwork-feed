@@ -6,13 +6,13 @@ from bs4 import BeautifulSoup
 from telegram.ext import Updater, CommandHandler
 
 
-updater = Updater(get_config()["telegram_token"], use_context=True)
-
-
 def get_config():
     with open("config/config.json", "r") as read_file:
         config = json.load(read_file)
         return config
+
+
+updater = Updater(get_config()["telegram_token"], use_context=True)
 
 
 def restricted(func):
