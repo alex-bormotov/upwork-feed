@@ -1,0 +1,5 @@
+{
+    "admin_chat_id": [1111111111],
+    "telegram_token": "Telegram bot token",
+    "feed_name": "Upwork feed url, Atom format"
+}
