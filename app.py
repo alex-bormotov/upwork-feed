@@ -53,19 +53,22 @@ class UpworkFeed:
         for msg in msg_list:
             soup = BeautifulSoup((msg['summary']))
             description = soup.get_text().replace('Budget', '\n\nBudget').replace('Skills:', '\n\nSkills:\n').replace('Posted On:', '\nPosted On:').replace('Category:', '\n\nCategory:').replace('Country:', '\nCountry:').replace('click to apply', msg['link'])
-            formated_msgs.append(f"{msg['title']}\n\n{description}")
+            if len(description) >= 4096:
+                formated_msgs.append(f"{msg['title']}\n\ndescription is too long, to see full version please visit the web site...")
+            else:
+                formated_msgs.append(f"{msg['title']}\n\n{description}")
         return formated_msgs
 
 
 @restricted
 def start(update, context):
-    context.bot.send_message(chat_id=update.effective_chat.id, text=f'Hello\n\nto start type /feed name\n\nfor example /feed main')
+    context.bot.send_message(chat_id=update.effective_chat.id, text='Hello\n\nto start type /feed name\n\nfor example /feed main')
 
 
 @restricted
 def get_feed(update, context):
     if len(" ".join(context.args)) == 0:
-        context.bot.send_message(chat_id=update.effective_chat.id,text=f'To start type /feed name')
+        context.bot.send_message(chat_id=update.effective_chat.id,text='To start type /feed name')
     feed_name = context.args[0]
     if feed_name not in [k for k in get_config().keys()]:
         context.bot.send_message(chat_id=update.effective_chat.id, text='Type correct feed name!')
