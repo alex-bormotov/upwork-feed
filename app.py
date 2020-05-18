@@ -31,9 +31,18 @@ class UpworkFeed:
         self.entries_list = []
 
 
+    def get_feed(self, url):
+        feed = feedparser.parse(url)
+        if feed.status == 200 and len(feed['feed']) > 0:
+            return feed
+        else:
+            sleep(5)
+            self.get_feed(url)
+
+
     def new_posts(self, url):
         if len(self.entries_list) != 0:
-            new_parsed_data = feedparser.parse(url)
+            new_parsed_data = self.get_feed(url)
             new_entries_list = [v for k, v in new_parsed_data.items() if k == 'entries']
             new_jobs = []
 
@@ -43,7 +52,7 @@ class UpworkFeed:
             self.entries_list = new_entries_list
             return new_jobs
         else:
-            parsed_data = feedparser.parse(url)
+            parsed_data = self.get_feed(url)
             self.entries_list = [v for k, v in parsed_data.items() if k == 'entries']
             return reversed(self.entries_list[0])
 
@@ -51,7 +60,7 @@ class UpworkFeed:
     def format_msg(self, msg_list):
         formated_msgs = []
         for msg in msg_list:
-            soup = BeautifulSoup((msg['summary']))
+            soup = BeautifulSoup((msg['summary']), features="html.parser")
             description = soup.get_text().replace('Budget', '\n\nBudget').replace('Skills:', '\n\nSkills:\n').replace('Posted On:', '\nPosted On:').replace('Category:', '\n\nCategory:').replace('Country:', '\nCountry:').replace('click to apply', msg['link'])
             if len(description) >= 4096:
                 formated_msgs.append(f"{msg['title']}\n\ndescription is too long, to see full version please visit the web site...")
@@ -72,16 +81,18 @@ def get_feed(update, context):
     feed_name = context.args[0]
     if feed_name not in [k for k in get_config().keys()]:
         context.bot.send_message(chat_id=update.effective_chat.id, text='Type correct feed name!')
-    try:
-        feed = UpworkFeed()
-        while True:
-            new_msg = feed.format_msg(feed.new_posts(get_config()[feed_name]))
-            for msg in new_msg:
-                sleep(5)
+
+    feed = UpworkFeed()
+    while True:
+        new_msg = feed.format_msg(feed.new_posts(get_config()[feed_name]))
+        for msg in new_msg:
+            sleep(5)
+            try:
                 context.bot.send_message(chat_id=update.effective_chat.id, text=msg)
-            sleep(10)
-    except Exception as e:
-        context.bot.send_message(chat_id=update.effective_chat.id, text=str(e))
+            except Exception:
+                sleep(5)
+        sleep(10)
+ 
 
 
 def main():
