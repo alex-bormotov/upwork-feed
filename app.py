@@ -31,18 +31,9 @@ class UpworkFeed:
         self.entries_list = []
 
 
-    def get_feed(self, url):
-        feed = feedparser.parse(url)
-        if feed.status == 200 and len(feed['feed']) > 0:
-            return feed
-        else:
-            sleep(5)
-            self.get_feed(url)
-
-
     def new_posts(self, url):
         if len(self.entries_list) != 0:
-            new_parsed_data = self.get_feed(url)
+            new_parsed_data = feedparser.parse(url)
             new_entries_list = [v for k, v in new_parsed_data.items() if k == 'entries']
             new_jobs = []
 
@@ -50,9 +41,9 @@ class UpworkFeed:
                 if t['link'] not in [t['link'] for t in self.entries_list[0]]:
                     new_jobs.append(t)
             self.entries_list = new_entries_list
-            return new_jobs
+            return reversed(new_jobs)
         else:
-            parsed_data = self.get_feed(url)
+            parsed_data = feedparser.parse(url)
             self.entries_list = [v for k, v in parsed_data.items() if k == 'entries']
             return reversed(self.entries_list[0])
 
@@ -92,7 +83,7 @@ def get_feed(update, context):
             except Exception:
                 sleep(5)
         sleep(10)
- 
+
 
 
 def main():
