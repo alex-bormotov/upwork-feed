@@ -86,7 +86,8 @@ def get_feed(update, context):
             sleep(5)
             try:
                 context.bot.send_message(chat_id=update.effective_chat.id, text=msg)
-            except Exception:
+            except Exception as e:
+                updater.bot.send_message(chat_id=get_config()["admin_chat_id"][0], text=str(e))
                 sleep(5)
         sleep(10)
 
