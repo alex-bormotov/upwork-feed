@@ -30,10 +30,17 @@ class UpworkFeed:
     def __init__(self):
         self.entries_list = []
 
+    def parsed_feed(self, url):
+        while True:
+            parsed_feed = feedparser.parse(url)
+            if parsed_feed.status == 200:
+                return parsed_feed
+            else:
+                sleep(5)
 
     def new_posts(self, url):
         if len(self.entries_list) != 0:
-            new_parsed_data = feedparser.parse(url)
+            new_parsed_data = self.parsed_feed(url)
             new_entries_list = [v for k, v in new_parsed_data.items() if k == 'entries']
             new_jobs = []
 
@@ -43,10 +50,9 @@ class UpworkFeed:
             self.entries_list = new_entries_list
             return reversed(new_jobs)
         else:
-            parsed_data = feedparser.parse(url)
+            parsed_data = self.parsed_feed(url)
             self.entries_list = [v for k, v in parsed_data.items() if k == 'entries']
             return reversed(self.entries_list[0])
-
 
     def format_msg(self, msg_list):
         formated_msgs = []
@@ -91,7 +97,7 @@ def main():
     updater.dispatcher.add_handler(CommandHandler("feed", get_feed))
 
     updater.start_polling()
-    updater.idle()
+    # updater.idle()
 
 
 if __name__ == "__main__":
