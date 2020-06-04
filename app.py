@@ -32,11 +32,10 @@ class UpworkFeed:
 
     def parsed_feed(self, url):
         while True:
+            sleep(5)
             parsed_feed = feedparser.parse(url)
             if parsed_feed.status == 200:
                 return parsed_feed
-            else:
-                sleep(5)
 
     def new_posts(self, url):
         if len(self.entries_list) != 0:
@@ -81,16 +80,14 @@ def get_feed(update, context):
 
     feed = UpworkFeed()
     while True:
-        new_msg = feed.format_msg(feed.new_posts(get_config()[feed_name]))
-        for msg in new_msg:
-            sleep(5)
-            try:
-                context.bot.send_message(chat_id=update.effective_chat.id, text=msg)
-            except Exception as e:
-                updater.bot.send_message(chat_id=get_config()["admin_chat_id"][0], text=str(e))
+        try:
+            sleep(20)
+            new_msg = feed.format_msg(feed.new_posts(get_config()[feed_name]))
+            for msg in new_msg:
                 sleep(5)
-        sleep(10)
-
+                context.bot.send_message(chat_id=update.effective_chat.id, text=msg)
+        except Exception as e:
+            updater.bot.send_message(chat_id=get_config()["admin_chat_id"][0], text=str(e))
 
 
 def main():
