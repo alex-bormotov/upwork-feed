@@ -29,6 +29,12 @@ def restricted(func):
 class UpworkFeed:
     def __init__(self):
         self.entries_list = []
+        self.blocked_countries = get_config()['blocked_countries']
+
+    def is_blocked_country(self, description):
+        for i in self.blocked_countries:
+            if i in description.lower():
+                return True
 
     def parsed_feed(self, url):
         while True:
@@ -61,7 +67,8 @@ class UpworkFeed:
             if len(description) >= 4096:
                 formated_msgs.append(f"{msg['title']}\n\ndescription is too long, to see full version please visit the web site...")
             else:
-                formated_msgs.append(f"{msg['title']}\n\n{description}")
+                if not self.is_blocked_country(description):
+                    formated_msgs.append(f"{msg['title']}\n\n{description}")
         return formated_msgs
 
 
