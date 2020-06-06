@@ -1,6 +1,6 @@
 {
     "admin_chat_id": [1111111111],
     "telegram_token": "Telegram bot token",
-    "feed_name": "Upwork feed url, Atom format",
-    "blocked_countries": ["india", "pakistan", "egypt"]
+    "feed_name": "Upwork feed url in Atom format",
+    "filter_countries": ["!India"]
 }

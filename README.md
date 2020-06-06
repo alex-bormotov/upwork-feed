@@ -7,7 +7,7 @@
 <details>
   <summary>Demo:</summary>
 
-  ![](upwork-feed-demo.gif)
+  ![](demo/upwork-feed-demo.gif)
 
 </details>
 
@@ -26,6 +26,14 @@ cp config/config.json.sample config/config.json
 ```
 
 > Edit config/config.json
+
+> For using a country filter you need put the country name into array "filter_countries":
+
+> Like so ["United States"] - that will be is equal to "send me jobs from the United States only"
+
+> If you made such entry ["!India"] - that will be is equal to "send me jobs from any country, except India"
+
+> Also, you can add more countries like so ["United States", "Canada"]
 
 ```bash
 sudo chmod +x docker_ubuntu_install.sh && sudo ./docker_ubuntu_install.sh

@@ -29,12 +29,20 @@ def restricted(func):
 class UpworkFeed:
     def __init__(self):
         self.entries_list = []
-        self.blocked_countries = get_config()['blocked_countries']
+        self.filter_countries = get_config()['filter_countries']
+        self.blocked_countries = [b[1:] for b in self.filter_countries if b[0] == '!']
+        self.allowed_countries = [a for a in self.filter_countries if a[0] != '!']
+
 
     def is_blocked_country(self, description):
-        for i in self.blocked_countries:
-            if i in description.lower():
-                return True
+        if len(self.allowed_countries) != 0:
+            for a in self.allowed_countries:
+                if a.upper() not in description.upper():
+                    return True
+        elif len(self.allowed_countries) == 0 and len(self.blocked_countries) != 0:
+            for b in self.blocked_countries:
+                if b.upper() in description.upper():
+                    return True
 
     def parsed_feed(self, url):
         while True:
