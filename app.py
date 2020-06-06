@@ -79,7 +79,8 @@ class UpworkFeed:
             soup = BeautifulSoup((msg['summary']), features="html.parser")
             description = soup.get_text().replace('Budget', '\n\nBudget').replace('Skills:', '\n\nSkills:\n').replace('Posted On:', '\nPosted On:').replace('Category:', '\n\nCategory:').replace('Country:', '\nCountry:').replace('click to apply', msg['link'])
             if len(description) >= 4096:
-                formated_msgs.append(f"{msg['title']}\n\ndescription is too long, to see full version please visit the web site...\n{self.extract_url(description)}")
+                if not self.is_blocked_country(description):
+                    formated_msgs.append(f"{msg['title']}\n\ndescription is too long, to see full version please visit the web site...\n{self.extract_url(description)}")
             else:
                 if not self.is_blocked_country(description):
                     formated_msgs.append(f"{msg['title']}\n\n{description}")
