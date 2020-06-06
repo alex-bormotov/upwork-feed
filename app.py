@@ -1,3 +1,4 @@
+import re
 import json
 import feedparser
 from time import sleep
@@ -67,13 +68,18 @@ class UpworkFeed:
             self.entries_list = [v for k, v in parsed_data.items() if k == 'entries']
             return reversed(self.entries_list[0])
 
+    def extract_url(self, description):
+        regex = r"((https?):((//)|(\\\\))+([\w\d:#@%/;$()~_?\+-=\\\.&](#!)?)*)"
+        url = re.findall(regex, description)
+        return [x[0] for x in url][0]
+
     def format_msg(self, msg_list):
         formated_msgs = []
         for msg in msg_list:
             soup = BeautifulSoup((msg['summary']), features="html.parser")
             description = soup.get_text().replace('Budget', '\n\nBudget').replace('Skills:', '\n\nSkills:\n').replace('Posted On:', '\nPosted On:').replace('Category:', '\n\nCategory:').replace('Country:', '\nCountry:').replace('click to apply', msg['link'])
             if len(description) >= 4096:
-                formated_msgs.append(f"{msg['title']}\n\ndescription is too long, to see full version please visit the web site...")
+                formated_msgs.append(f"{msg['title']}\n\ndescription is too long, to see full version please visit the web site...\n{self.extract_url(description)}")
             else:
                 if not self.is_blocked_country(description):
                     formated_msgs.append(f"{msg['title']}\n\n{description}")
